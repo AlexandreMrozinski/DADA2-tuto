@@ -115,7 +115,7 @@ gunzip rdp_species_assignment_16.fa.gz
 
 ```{bash}
 cd ~
-wget https://zenodo.org/record/801828/files/rdp_train_set_16.fa.gz
+wget https://zenodo.org/record/801828/files/rdp_train_set_18.fa.gz
 #gunzip rdp_train_set_16.fa.gz
 ```
 
