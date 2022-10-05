@@ -1,0 +1,136 @@
+---
+title: "tuto DADA2"
+output: github_document
+---
+```{bash}
+cd ~
+wget https://mothur.s3.us-east-2.amazonaws.com/wiki/miseqsopdata.zip
+unzip miseqsopdata.zip
+```
+
+```{r}
+library(phyloseq)
+library(dada2)
+library(DECIPHER)
+library(phangorn)
+library(ggplot2)
+library(gridExtra)
+```
+#site du tuto https://bioconductor.org/help/course-materials/2017/BioC2017/Day1/Workshops/Microbiome/MicrobiomeWorkflowII.html
+```{r}
+miseq_path <- "/home/rstudio/MiSeq_SOP"
+list.files(miseq_path)
+```
+
+```{r}
+# Sort ensures forward/reverse reads are in same order
+fnFs <- sort(list.files(miseq_path, pattern="_R1_001.fastq"))
+fnRs <- sort(list.files(miseq_path, pattern="_R2_001.fastq"))
+
+# Extract sample names, assuming filenames have format: SAMPLENAME_XXX.fastq
+sampleNames <- sapply(strsplit(fnFs, "_"), `[`, 1)
+
+# Specify the full path to the fnFs and fnRs
+fnFs <- file.path(miseq_path, fnFs)
+fnRs <- file.path(miseq_path, fnRs)
+fnFs[1:3]
+fnRs[1:3]
+```
+
+```{r}
+#qualité phylosec, les graphiques montre que Forward (séquencage) est plus qualitatif que Reverse 
+plotQualityProfile(fnFs[1:2])
+plotQualityProfile(fnRs[1:2])
+```
+
+```{r}
+#permet de filtrer 
+
+filt_path <- file.path(miseq_path, "filtered") # Place filtered files in filtered/ subdirectory
+if(!file_test("-d", filt_path)) dir.create(filt_path)
+filtFs <- file.path(filt_path, paste0(sampleNames, "_F_filt.fastq.gz"))
+filtRs <- file.path(filt_path, paste0(sampleNames, "_R_filt.fastq.gz"))
+```
+
+```{r}
+#permet de garder que ce qui est bien, assez qualitatif trunlen supprime pour F apres 240 et pour R après 160
+#sequence avec des N c est nul on supprime
+#trunQ si score de qualité plus bas que 2 (20 car q20) il supprime
+
+out <- filterAndTrim(fnFs, filtFs, fnRs, filtRs, truncLen=c(240,160),
+              maxN=0, maxEE=c(2,2), truncQ=2, rm.phix=TRUE,
+              compress=TRUE, multithread=TRUE) # On Windows set multithread=FALSE
+head(out)
+```
+
+```{r}
+#dereplication, permet de supprimer es redondances er d'indiquer combien il y en avait
+
+derepFs <- derepFastq(filtFs, verbose=TRUE)
+derepRs <- derepFastq(filtRs, verbose=TRUE)
+# Name the derep-class objects by the sample names
+names(derepFs) <- sampleNames
+names(derepRs) <- sampleNames
+
+#print(derepFs)
+#print(derepRs)
+```
+
+```{r}
+errF <- learnErrors(filtFs, multithread=TRUE)
+errR <- learnErrors(filtRs, multithread=TRUE)
+```
+```{r}
+plotErrors(errF)
+plotErrors(errR)
+```
+
+```{r}
+dadaFs <- dada(derepFs, err=errF, multithread=TRUE)
+dadaRs <- dada(derepRs, err=errR, multithread=TRUE)
+```
+
+```{r}
+dadaFs[[1]]
+dadaRs[[1]]
+```
+```{r}
+mergers <- mergePairs(dadaFs, derepFs, dadaRs, derepRs)
+```
+
+```{r}
+seqtabAll <- makeSequenceTable(mergers[!grepl("Mock", names(mergers))])
+table(nchar(getSequences(seqtabAll)))
+#1 sequence avec 251 caractère, 85 avec 252 ... permet de verif 
+```
+```{r}
+seqtabNoC <- removeBimeraDenovo(seqtabAll)
+```
+
+```{bash}
+cd ~
+wget https://zenodo.org/record/801828/files/rdp_spelcies_assignment_16.fa.gz
+gunzip rdp_species_assignment_16.fa.gz
+```
+
+```{bash}
+cd ~
+wget https://zenodo.org/record/801828/files/rdp_train_set_16.fa.gz
+#gunzip rdp_train_set_16.fa.gz
+```
+
+```{r}
+fastaRef <- "/home/rstudio/rdp_train_set_16.fa.gz"
+taxTab <- assignTaxonomy(seqtabNoC, refFasta = fastaRef, multithread=TRUE)
+unname(head(taxTab))
+```
+
+
+
+
+
+
+
+
+
+

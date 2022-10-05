@@ -1,0 +1,25 @@
+---
+title: "tuto phylosec"
+output: github_document
+---
+```{bash, eval=FALSE}
+sudo apt-get update -y
+sudo apt-get install -y libglpk-dev
+sudo apt-get install -y liblzma-dev libbz2-dev
+#sudo apt-get install libxtst6
+sudo apt-get install libxt6
+```
+# installaltion des packages
+```{r}
+install.packages("BiocManager")
+install.packages("ggplot2")
+install.packages("gridExtra")
+BiocManager::install("Rhtslib")
+BiocManager::install(c("dada2", "phyloseq", "DECIPHER", "phangorn"))
+```
+
+```{bash}
+cd ~
+wget https://mothur.s3.us-east-2.amazonaws.com/wiki/miseqsopdata.zip
+unzip miseqsopdata.zip
+```
