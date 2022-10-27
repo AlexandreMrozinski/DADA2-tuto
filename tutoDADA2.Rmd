@@ -2,11 +2,6 @@
 title: "tuto DADA2"
 output: github_document
 ---
-```{bash}
-cd ~
-wget https://mothur.s3.us-east-2.amazonaws.com/wiki/miseqsopdata.zip
-unzip miseqsopdata.zip
-```
 
 ```{r}
 library(phyloseq)
@@ -128,17 +123,9 @@ table(nchar(getSequences(seqtabAll)))
 seqtabNoC <- removeBimeraDenovo(seqtabAll)
 ```
 
-```{bash}
-cd ~
-wget https://zenodo.org/record/801828/files/rdp_spelcies_assignment_16.fa.gz
-gunzip rdp_species_assignment_16.fa.gz
-```
 
-```{bash}
-cd ~
-wget https://zenodo.org/record/801828/files/rdp_train_set_18.fa.gz
-#gunzip rdp_train_set_16.fa.gz
-```
+
+
 
 ```{r}
 fastaRef <- "/home/rstudio/rdp_train_set_16.fa.gz"
@@ -383,6 +370,7 @@ plot_ordination(pslog, out.dpcoa.log, color = "age_binned", label= "SampleID",
 plot_ordination(pslog, out.dpcoa.log, type = "species", color = "Phylum") +
   coord_fixed(sqrt(evals[2] / evals[1]))
 ```
+
 ```{r}
 out.wuf.log <- ordinate(pslog, method = "PCoA", distance ="wunifrac")
 evals <- out.wuf.log$values$Eigenvalues
@@ -391,6 +379,7 @@ plot_ordination(pslog, out.wuf.log, color = "age_binned",
   coord_fixed(sqrt(evals[2] / evals[1])) +
   labs(col = "Binned Age", shape = "Litter")
 ```
+
 ```{r}
 abund <- otu_table(pslog)
 abund_ranks <- t(apply(abund, 1, rank))
@@ -420,6 +409,7 @@ ggplot(abund_df %>%
   labs(x = "Abundance", y = "Thresholded rank") +
   scale_color_brewer(palette = "Set2")
 ```
+
 ```{r}
 library(ade4)
 ranks_pca <- dudi.pca(abund_ranks, scannf = F, nf = 3)
@@ -440,6 +430,7 @@ row_scores <- row_scores %>%
 col_scores <- col_scores %>%
   left_join(tax)
 ```
+
 ```{r}
 evals_prop <- 100 * (ranks_pca$eig / sum(ranks_pca$eig))
 ggplot() +
@@ -454,6 +445,7 @@ ggplot() +
   coord_fixed(sqrt(ranks_pca$eig[2] / ranks_pca$eig[1])) +
   theme(panel.border = element_rect(color = "#787878", fill = alpha("white", 0)))
 ```
+
 ```{r}
 ps_ccpna <- ordinate(pslog, "CCA", formula = pslog ~ age_binned + family_relationship)
 ```

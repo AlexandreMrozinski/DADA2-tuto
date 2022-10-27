@@ -1,0 +1,22 @@
+---
+title: ""R Notebook"DADA2 DL donées"
+output: github_document
+---
+
+```{bash}
+cd ~
+wget https://mothur.s3.us-east-2.amazonaws.com/wiki/miseqsopdata.zip
+unzip miseqsopdata.zip
+```
+
+```{bash}
+cd ~
+wget https://zenodo.org/record/801828/files/rdp_spelcies_assignment_16.fa.gz
+gunzip rdp_species_assignment_16.fa.gz
+```
+
+```{bash}
+cd ~
+wget https://zenodo.org/record/801828/files/rdp_train_set_18.fa.gz
+#gunzip rdp_train_set_16.fa.gz
+```
