@@ -123,12 +123,8 @@ table(nchar(getSequences(seqtabAll)))
 seqtabNoC <- removeBimeraDenovo(seqtabAll)
 ```
 
-
-
-
-
 ```{r}
-fastaRef <- "/home/rstudio/rdp_train_set_16.fa.gz"
+fastaRef <- "/home/rstudio/rdp_train_set_18.fa.gz?download=1"
 taxTab <- assignTaxonomy(seqtabNoC, refFasta = fastaRef, multithread=TRUE)
 unname(head(taxTab))
 ```
