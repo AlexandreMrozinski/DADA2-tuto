@@ -34,7 +34,7 @@ library(phyloseqGraphTest)
 ```
 #site du tuto https://bioconductor.org/help/course-materials/2017/BioC2017/Day1/Workshops/Microbiome/MicrobiomeWorkflowII.html
 ```{r}
-miseq_path <- "/home/rstudio/MiSeq_SOP"
+miseq_path <- "MiSeq_SOP"
 list.files(miseq_path)
 ```
 
@@ -80,7 +80,7 @@ head(out)
 ```
 
 ```{r}
-#dereplication, permet de supprimer es redondances er d'indiquer combien il y en avait
+#dereplication, permet de supprimer es redondances et d'indiquer combien il y en avait
 
 derepFs <- derepFastq(filtFs, verbose=TRUE)
 derepRs <- derepFastq(filtRs, verbose=TRUE)
@@ -93,6 +93,7 @@ names(derepRs) <- sampleNames
 ```
 
 ```{r}
+#corection
 errF <- learnErrors(filtFs, multithread=TRUE)
 errR <- learnErrors(filtRs, multithread=TRUE)
 ```
@@ -124,7 +125,7 @@ seqtabNoC <- removeBimeraDenovo(seqtabAll)
 ```
 
 ```{r}
-fastaRef <- "/home/rstudio/rdp_train_set_18.fa.gz?download=1"
+fastaRef <- "rdp_train_set_18.fa.gz?download=1"
 taxTab <- assignTaxonomy(seqtabNoC, refFasta = fastaRef, multithread=TRUE)
 unname(head(taxTab))
 ```
