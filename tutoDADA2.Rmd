@@ -1,6 +1,7 @@
 ---
 title: "tuto DADA2"
 output: github_document
+author: Mrozinski Alexandre
 ---
 
 ```{r}

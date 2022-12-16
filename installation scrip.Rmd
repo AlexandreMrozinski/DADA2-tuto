@@ -1,6 +1,7 @@
 ---
 title: "tuto phylosec"
 output: github_document
+author: Mrozinski Alexandre
 ---
 ```{bash, eval=FALSE}
 sudo apt-get update -y

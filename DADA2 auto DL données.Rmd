@@ -1,6 +1,7 @@
 ---
 title: ""R Notebook"DADA2 DL donées"
 output: github_document
+author: Mrozinski Alexandre
 ---
 
 ```{bash}
