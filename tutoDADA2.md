@@ -1,45 +1,40 @@
----
-title: "tuto DADA2"
-output: github_document
-author: Mrozinski Alexandre
----
+tuto DADA2
+================
+Mrozinski Alexandre
 
-```{r, include=FALSE}
-library(phyloseq)
-library(dada2)
-library(DECIPHER)
-library(phangorn)
-library(ggplot2)
-library(gridExtra)
-library(shiny)
-library(miniUI)
-library(caret)
-library(pls)
-library(e1071)
-library(ggplot2)
-library(randomForest)
-library(dplyr)
-library(ggrepel)
-#library(nlme)
-library(devtools)
-library(reshape2)
-library(PMA)
-#library(structSSI)
-library(ade4)
-library(ggnetwork)
-library(intergraph)
-library(scales)
-library(genefilter)
-library(impute)
-library(phyloseqGraphTest)
-```
-#site du tuto https://bioconductor.org/help/course-materials/2017/BioC2017/Day1/Workshops/Microbiome/MicrobiomeWorkflowII.html
-```{r}
+\#site du tuto
+<https://bioconductor.org/help/course-materials/2017/BioC2017/Day1/Workshops/Microbiome/MicrobiomeWorkflowII.html>
+
+``` r
 miseq_path <- "MiSeq_SOP"
 list.files(miseq_path)
 ```
 
-```{r}
+    ##  [1] "F3D0_S188_L001_R1_001.fastq"   "F3D0_S188_L001_R2_001.fastq"  
+    ##  [3] "F3D1_S189_L001_R1_001.fastq"   "F3D1_S189_L001_R2_001.fastq"  
+    ##  [5] "F3D141_S207_L001_R1_001.fastq" "F3D141_S207_L001_R2_001.fastq"
+    ##  [7] "F3D142_S208_L001_R1_001.fastq" "F3D142_S208_L001_R2_001.fastq"
+    ##  [9] "F3D143_S209_L001_R1_001.fastq" "F3D143_S209_L001_R2_001.fastq"
+    ## [11] "F3D144_S210_L001_R1_001.fastq" "F3D144_S210_L001_R2_001.fastq"
+    ## [13] "F3D145_S211_L001_R1_001.fastq" "F3D145_S211_L001_R2_001.fastq"
+    ## [15] "F3D146_S212_L001_R1_001.fastq" "F3D146_S212_L001_R2_001.fastq"
+    ## [17] "F3D147_S213_L001_R1_001.fastq" "F3D147_S213_L001_R2_001.fastq"
+    ## [19] "F3D148_S214_L001_R1_001.fastq" "F3D148_S214_L001_R2_001.fastq"
+    ## [21] "F3D149_S215_L001_R1_001.fastq" "F3D149_S215_L001_R2_001.fastq"
+    ## [23] "F3D150_S216_L001_R1_001.fastq" "F3D150_S216_L001_R2_001.fastq"
+    ## [25] "F3D2_S190_L001_R1_001.fastq"   "F3D2_S190_L001_R2_001.fastq"  
+    ## [27] "F3D3_S191_L001_R1_001.fastq"   "F3D3_S191_L001_R2_001.fastq"  
+    ## [29] "F3D5_S193_L001_R1_001.fastq"   "F3D5_S193_L001_R2_001.fastq"  
+    ## [31] "F3D6_S194_L001_R1_001.fastq"   "F3D6_S194_L001_R2_001.fastq"  
+    ## [33] "F3D7_S195_L001_R1_001.fastq"   "F3D7_S195_L001_R2_001.fastq"  
+    ## [35] "F3D8_S196_L001_R1_001.fastq"   "F3D8_S196_L001_R2_001.fastq"  
+    ## [37] "F3D9_S197_L001_R1_001.fastq"   "F3D9_S197_L001_R2_001.fastq"  
+    ## [39] "filtered"                      "HMP_MOCK.v35.fasta"           
+    ## [41] "Mock_S280_L001_R1_001.fastq"   "Mock_S280_L001_R2_001.fastq"  
+    ## [43] "mouse.dpw.metadata"            "mouse.time.design"            
+    ## [45] "stability.batch"               "stability.files"
+
+``` r
 # Sort ensures forward/reverse reads are in same order
 fnFs <- sort(list.files(miseq_path, pattern="_R1_001.fastq"))
 fnRs <- sort(list.files(miseq_path, pattern="_R2_001.fastq"))
@@ -51,16 +46,39 @@ sampleNames <- sapply(strsplit(fnFs, "_"), `[`, 1)
 fnFs <- file.path(miseq_path, fnFs)
 fnRs <- file.path(miseq_path, fnRs)
 fnFs[1:3]
+```
+
+    ## [1] "MiSeq_SOP/F3D0_S188_L001_R1_001.fastq"  
+    ## [2] "MiSeq_SOP/F3D1_S189_L001_R1_001.fastq"  
+    ## [3] "MiSeq_SOP/F3D141_S207_L001_R1_001.fastq"
+
+``` r
 fnRs[1:3]
 ```
 
-```{r}
+    ## [1] "MiSeq_SOP/F3D0_S188_L001_R2_001.fastq"  
+    ## [2] "MiSeq_SOP/F3D1_S189_L001_R2_001.fastq"  
+    ## [3] "MiSeq_SOP/F3D141_S207_L001_R2_001.fastq"
+
+``` r
 #qualité phylosec, les graphiques montre que Forward (séquencage) est plus qualitatif que Reverse 
 plotQualityProfile(fnFs[1:2])
+```
+
+    ## Warning: The `<scale>` argument of `guides()` cannot be `FALSE`. Use "none" instead as
+    ## of ggplot2 3.3.4.
+    ## ℹ The deprecated feature was likely used in the dada2 package.
+    ##   Please report the issue at <]8;;https://github.com/benjjneb/dada2/issueshttps://github.com/benjjneb/dada2/issues]8;;>.
+
+![](tutoDADA2_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+``` r
 plotQualityProfile(fnRs[1:2])
 ```
 
-```{r}
+![](tutoDADA2_files/figure-gfm/unnamed-chunk-4-2.png)<!-- -->
+
+``` r
 #permet de filtrer 
 
 filt_path <- file.path(miseq_path, "filtered") # Place filtered files in filtered/ subdirectory
@@ -69,7 +87,7 @@ filtFs <- file.path(filt_path, paste0(sampleNames, "_F_filt.fastq.gz"))
 filtRs <- file.path(filt_path, paste0(sampleNames, "_R_filt.fastq.gz"))
 ```
 
-```{r}
+``` r
 #permet de garder que ce qui est bien, assez qualitatif trunlen supprime pour F apres 240 et pour R après 160
 #sequence avec des N c est nul on supprime
 #trunQ si score de qualité plus bas que 2 (20 car q20) il supprime
@@ -80,64 +98,158 @@ out <- filterAndTrim(fnFs, filtFs, fnRs, filtRs, truncLen=c(240,160),
 head(out)
 ```
 
-```{r, include=FALSE}
-#dereplication, permet de supprimer es redondances et d'indiquer combien il y en avait
+    ##                               reads.in reads.out
+    ## F3D0_S188_L001_R1_001.fastq       7793      7113
+    ## F3D1_S189_L001_R1_001.fastq       5869      5299
+    ## F3D141_S207_L001_R1_001.fastq     5958      5463
+    ## F3D142_S208_L001_R1_001.fastq     3183      2914
+    ## F3D143_S209_L001_R1_001.fastq     3178      2941
+    ## F3D144_S210_L001_R1_001.fastq     4827      4312
 
-derepFs <- derepFastq(filtFs, verbose=TRUE)
-derepRs <- derepFastq(filtRs, verbose=TRUE)
-# Name the derep-class objects by the sample names
-names(derepFs) <- sampleNames
-names(derepRs) <- sampleNames
-
-#print(derepFs)
-#print(derepRs)
-```
-
-```{r}
+``` r
 #corection
 errF <- learnErrors(filtFs, multithread=TRUE)
+```
+
+    ## 33514080 total bases in 139642 reads from 20 samples will be used for learning the error rates.
+
+``` r
 errR <- learnErrors(filtRs, multithread=TRUE)
 ```
-```{r}
+
+    ## 22342720 total bases in 139642 reads from 20 samples will be used for learning the error rates.
+
+``` r
 plotErrors(errF)
+```
+
+    ## Warning: Transformation introduced infinite values in continuous y-axis
+
+![](tutoDADA2_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+
+``` r
 plotErrors(errR)
 ```
 
-```{r}
+    ## Warning: Transformation introduced infinite values in continuous y-axis
+
+![](tutoDADA2_files/figure-gfm/unnamed-chunk-9-2.png)<!-- -->
+
+``` r
 dadaFs <- dada(derepFs, err=errF, multithread=TRUE)
+```
+
+    ## Sample 1 - 7113 reads in 1979 unique sequences.
+    ## Sample 2 - 5299 reads in 1639 unique sequences.
+    ## Sample 3 - 5463 reads in 1477 unique sequences.
+    ## Sample 4 - 2914 reads in 904 unique sequences.
+    ## Sample 5 - 2941 reads in 939 unique sequences.
+    ## Sample 6 - 4312 reads in 1267 unique sequences.
+    ## Sample 7 - 6741 reads in 1756 unique sequences.
+    ## Sample 8 - 4560 reads in 1438 unique sequences.
+    ## Sample 9 - 15637 reads in 3590 unique sequences.
+    ## Sample 10 - 11413 reads in 2762 unique sequences.
+    ## Sample 11 - 12017 reads in 3021 unique sequences.
+    ## Sample 12 - 5032 reads in 1566 unique sequences.
+    ## Sample 13 - 18075 reads in 3707 unique sequences.
+    ## Sample 14 - 6250 reads in 1479 unique sequences.
+    ## Sample 15 - 4052 reads in 1195 unique sequences.
+    ## Sample 16 - 7369 reads in 1832 unique sequences.
+    ## Sample 17 - 4765 reads in 1183 unique sequences.
+    ## Sample 18 - 4871 reads in 1382 unique sequences.
+    ## Sample 19 - 6504 reads in 1709 unique sequences.
+    ## Sample 20 - 4314 reads in 897 unique sequences.
+
+``` r
 dadaRs <- dada(derepRs, err=errR, multithread=TRUE)
 ```
 
-```{r}
+    ## Sample 1 - 7113 reads in 1660 unique sequences.
+    ## Sample 2 - 5299 reads in 1349 unique sequences.
+    ## Sample 3 - 5463 reads in 1335 unique sequences.
+    ## Sample 4 - 2914 reads in 853 unique sequences.
+    ## Sample 5 - 2941 reads in 880 unique sequences.
+    ## Sample 6 - 4312 reads in 1286 unique sequences.
+    ## Sample 7 - 6741 reads in 1803 unique sequences.
+    ## Sample 8 - 4560 reads in 1265 unique sequences.
+    ## Sample 9 - 15637 reads in 3414 unique sequences.
+    ## Sample 10 - 11413 reads in 2522 unique sequences.
+    ## Sample 11 - 12017 reads in 2771 unique sequences.
+    ## Sample 12 - 5032 reads in 1415 unique sequences.
+    ## Sample 13 - 18075 reads in 3290 unique sequences.
+    ## Sample 14 - 6250 reads in 1390 unique sequences.
+    ## Sample 15 - 4052 reads in 1134 unique sequences.
+    ## Sample 16 - 7369 reads in 1635 unique sequences.
+    ## Sample 17 - 4765 reads in 1084 unique sequences.
+    ## Sample 18 - 4871 reads in 1161 unique sequences.
+    ## Sample 19 - 6504 reads in 1502 unique sequences.
+    ## Sample 20 - 4314 reads in 732 unique sequences.
+
+``` r
 dadaFs[[1]]
+```
+
+    ## dada-class: object describing DADA2 denoising results
+    ## 128 sequence variants were inferred from 1979 input unique sequences.
+    ## Key parameters: OMEGA_A = 1e-40, OMEGA_C = 1e-40, BAND_SIZE = 16
+
+``` r
 dadaRs[[1]]
 ```
-```{r}
+
+    ## dada-class: object describing DADA2 denoising results
+    ## 119 sequence variants were inferred from 1660 input unique sequences.
+    ## Key parameters: OMEGA_A = 1e-40, OMEGA_C = 1e-40, BAND_SIZE = 16
+
+``` r
 mergers <- mergePairs(dadaFs, derepFs, dadaRs, derepRs)
 ```
 
-```{r}
+``` r
 seqtabAll <- makeSequenceTable(mergers[!grepl("Mock", names(mergers))])
 table(nchar(getSequences(seqtabAll)))
+```
+
+    ## 
+    ## 251 252 253 254 255 
+    ##   1  85 186   5   2
+
+``` r
 #1 sequence avec 251 caractère, 85 avec 252 ... permet de verif 
 ```
-```{r}
+
+``` r
 seqtabNoC <- removeBimeraDenovo(seqtabAll)
 ```
 
-```{r}
+``` r
 fastaRef <- "rdp_train_set_18.fa.gz?download=1"
 taxTab <- assignTaxonomy(seqtabNoC, refFasta = fastaRef, multithread=TRUE)
 unname(head(taxTab))
 ```
 
-```{r}
+    ##      [,1]       [,2]            [,3]          [,4]            [,5]            
+    ## [1,] "Bacteria" "Bacteroidetes" "Bacteroidia" "Bacteroidales" "Muribaculaceae"
+    ## [2,] "Bacteria" "Bacteroidetes" "Bacteroidia" "Bacteroidales" "Muribaculaceae"
+    ## [3,] "Bacteria" "Bacteroidetes" "Bacteroidia" "Bacteroidales" "Muribaculaceae"
+    ## [4,] "Bacteria" "Bacteroidetes" "Bacteroidia" "Bacteroidales" "Muribaculaceae"
+    ## [5,] "Bacteria" "Bacteroidetes" "Bacteroidia" "Bacteroidales" "Bacteroidaceae"
+    ## [6,] "Bacteria" "Bacteroidetes" "Bacteroidia" "Bacteroidales" "Muribaculaceae"
+    ##      [,6]         
+    ## [1,] "Duncaniella"
+    ## [2,] "Duncaniella"
+    ## [3,] "Muribaculum"
+    ## [4,] "Muribaculum"
+    ## [5,] "Bacteroides"
+    ## [6,] "Muribaculum"
+
+``` r
 seqs <- getSequences(seqtabNoC)
 names(seqs) <- seqs # This propagates to the tip labels of the tree
 alignment <- AlignSeqs(DNAStringSet(seqs), anchor=NA,verbose=FALSE)
 ```
 
-```{r}
+``` r
 phangAlign <- phyDat(as(alignment, "matrix"), type="DNA")
 dm <- dist.ml(phangAlign)
 treeNJ <- NJ(dm) # Note, tip order != sequence order
@@ -148,7 +260,7 @@ fitGTR <- optim.pml(fitGTR, model="GTR", optInv=TRUE, optGamma=TRUE,
 detach("package:phangorn", unload=TRUE)
 ```
 
-```{r}
+``` r
 samdf <- read.csv("https://raw.githubusercontent.com/spholmes/F1000_workflow/master/data/MIMARKS_Data_combined.csv",header=TRUE)
 samdf$SampleID <- paste0(gsub("00", "", samdf$host_subject_id), "D", samdf$age-21)
 samdf <- samdf[!duplicated(samdf$SampleID),] # Remove dupicate entries for reverse reads
@@ -156,7 +268,9 @@ rownames(seqtabAll) <- gsub("124", "125", rownames(seqtabAll)) # Fix discrepancy
 all(rownames(seqtabAll) %in% samdf$SampleID) # TRUE
 ```
 
-```{r}
+    ## [1] TRUE
+
+``` r
 rownames(samdf) <- samdf$SampleID
 keep.cols <- c("collection_date", "biome", "target_gene", "target_subfragment",
 "host_common_name", "host_subject_id", "age", "sex", "body_product", "tot_mass",
@@ -164,7 +278,7 @@ keep.cols <- c("collection_date", "biome", "target_gene", "target_subfragment",
 samdf <- samdf[rownames(seqtabAll), keep.cols]
 ```
 
-```{r}
+``` r
 ps <- phyloseq(otu_table(seqtabNoC, taxa_are_rows=FALSE), 
                sample_data(samdf), 
                tax_table(taxTab),phy_tree(fitGTR$tree))
@@ -172,26 +286,55 @@ ps <- prune_samples(sample_names(ps) != "Mock", ps) # Remove mock sample
 ps
 ```
 
-```{r}
+    ## phyloseq-class experiment-level object
+    ## otu_table()   OTU Table:         [ 218 taxa and 19 samples ]
+    ## sample_data() Sample Data:       [ 19 samples by 14 sample variables ]
+    ## tax_table()   Taxonomy Table:    [ 218 taxa by 6 taxonomic ranks ]
+    ## phy_tree()    Phylogenetic Tree: [ 218 tips and 216 internal nodes ]
+
+``` r
 ps_connect <-url("https://raw.githubusercontent.com/spholmes/F1000_workflow/master/data/ps.rds")
 ps = readRDS(ps_connect)
 ps
 ```
 
-```{r}
+    ## phyloseq-class experiment-level object
+    ## otu_table()   OTU Table:         [ 389 taxa and 360 samples ]
+    ## sample_data() Sample Data:       [ 360 samples by 14 sample variables ]
+    ## tax_table()   Taxonomy Table:    [ 389 taxa by 6 taxonomic ranks ]
+    ## phy_tree()    Phylogenetic Tree: [ 389 tips and 387 internal nodes ]
+
+``` r
 # Show available ranks in the dataset
 rank_names(ps)
 ```
-```{r}
+
+    ## [1] "Kingdom" "Phylum"  "Class"   "Order"   "Family"  "Genus"
+
+``` r
 # Create table, number of features for each phyla
 table(tax_table(ps)[, "Phylum"], exclude = NULL)
 ```
 
-```{r}
+    ## 
+    ##              Actinobacteria               Bacteroidetes 
+    ##                          13                          23 
+    ## Candidatus_Saccharibacteria   Cyanobacteria/Chloroplast 
+    ##                           1                           4 
+    ##         Deinococcus-Thermus                  Firmicutes 
+    ##                           1                         327 
+    ##                Fusobacteria              Proteobacteria 
+    ##                           1                          11 
+    ##                 Tenericutes             Verrucomicrobia 
+    ##                           1                           1 
+    ##                        <NA> 
+    ##                           6
+
+``` r
 ps <- subset_taxa(ps, !is.na(Phylum) & !Phylum %in% c("", "uncharacterized"))
 ```
 
-```{r}
+``` r
 # Compute prevalence of each feature, store as data.frame
 prevdf = apply(X = otu_table(ps),
                MARGIN = ifelse(taxa_are_rows(ps), yes = 1, no = 2),
@@ -202,11 +345,23 @@ prevdf = data.frame(Prevalence = prevdf,
                     tax_table(ps))
 ```
 
-```{r}
+``` r
 plyr::ddply(prevdf, "Phylum", function(df1){cbind(mean(df1$Prevalence),sum(df1$Prevalence))})
 ```
 
-```{r}
+    ##                         Phylum         1     2
+    ## 1               Actinobacteria 120.15385  1562
+    ## 2                Bacteroidetes 265.52174  6107
+    ## 3  Candidatus_Saccharibacteria 280.00000   280
+    ## 4    Cyanobacteria/Chloroplast  64.25000   257
+    ## 5          Deinococcus-Thermus  52.00000    52
+    ## 6                   Firmicutes 179.24771 58614
+    ## 7                 Fusobacteria   2.00000     2
+    ## 8               Proteobacteria  59.09091   650
+    ## 9                  Tenericutes 234.00000   234
+    ## 10             Verrucomicrobia 104.00000   104
+
+``` r
 # Define phyla to filter
 filterPhyla = c("Fusobacteria", "Deinococcus-Thermus")
 
@@ -215,7 +370,13 @@ ps1 = subset_taxa(ps, !Phylum %in% filterPhyla)
 ps1
 ```
 
-```{r}
+    ## phyloseq-class experiment-level object
+    ## otu_table()   OTU Table:         [ 381 taxa and 360 samples ]
+    ## sample_data() Sample Data:       [ 360 samples by 14 sample variables ]
+    ## tax_table()   Taxonomy Table:    [ 381 taxa by 6 taxonomic ranks ]
+    ## phy_tree()    Phylogenetic Tree: [ 381 tips and 379 internal nodes ]
+
+``` r
 # Subset to the remaining phyla
 prevdf1 = subset(prevdf, Phylum %in% get_taxa_unique(ps1, "Phylum"))
 ggplot(prevdf1, aes(TotalAbundance, Prevalence / nsamples(ps),color=Phylum)) +
@@ -225,33 +386,39 @@ ggplot(prevdf1, aes(TotalAbundance, Prevalence / nsamples(ps),color=Phylum)) +
   facet_wrap(~Phylum) + theme(legend.position="none")
 ```
 
-```{r}
+![](tutoDADA2_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
+
+``` r
 # Define prevalence threshold as 5% of total samples
 prevalenceThreshold = 0.05 * nsamples(ps)
 prevalenceThreshold
 ```
 
-```{r}
+    ## [1] 18
+
+``` r
 # Execute prevalence filter, using `prune_taxa()` function
 keepTaxa = rownames(prevdf1)[(prevdf1$Prevalence >= prevalenceThreshold)]
 ps2 = prune_taxa(keepTaxa, ps)
 ```
 
-```{r}
+``` r
 # How many genera would be present after filtering?
 length(get_taxa_unique(ps2, taxonomic.rank = "Genus"))
 ```
 
-```{r}
+    ## [1] 49
+
+``` r
 ps3 = tax_glom(ps2, "Genus", NArm = TRUE)
 ```
 
-```{r}
+``` r
 h1 = 0.4
 ps4 = tip_glom(ps2, h = h1)
 ```
 
-```{r}
+``` r
 multiPlotTitleTextSize = 15
 p2tree = plot_tree(ps2, method = "treeonly",
                    ladderize = "left",
@@ -265,12 +432,14 @@ p4tree = plot_tree(ps4, method = "treeonly",
   theme(plot.title = element_text(size = multiPlotTitleTextSize))
 ```
 
-```{r}
+``` r
 # group plots together
 grid.arrange(nrow = 1, p2tree, p3tree, p4tree)
 ```
 
-```{r}
+![](tutoDADA2_files/figure-gfm/unnamed-chunk-35-1.png)<!-- -->
+
+``` r
 plot_abundance = function(physeq,title = "",
                           Facet = "Order", Color = "Phylum"){
   # Arbitrary subset, based on Phylum, for plotting
@@ -287,66 +456,96 @@ plot_abundance = function(physeq,title = "",
 }
 ```
 
-```{r}
+``` r
 # Transform to relative abundance. Save as new object.
 ps3ra = transform_sample_counts(ps3, function(x){x / sum(x)})
 ```
 
-```{r}
+``` r
 plotBefore = plot_abundance(ps3,"")
+```
+
+    ## Warning: `aes_string()` was deprecated in ggplot2 3.0.0.
+    ## ℹ Please use tidy evaluation ideoms with `aes()`
+
+``` r
 plotAfter = plot_abundance(ps3ra,"")
 # Combine each plot into one graphic.
 grid.arrange(nrow = 2,  plotBefore, plotAfter)
 ```
 
-```{r}
+![](tutoDADA2_files/figure-gfm/unnamed-chunk-38-1.png)<!-- -->
+
+``` r
 psOrd = subset_taxa(ps3ra, Order == "Lactobacillales")
 plot_abundance(psOrd, Facet = "Genus", Color = NULL)
 ```
 
-```{r}
+![](tutoDADA2_files/figure-gfm/unnamed-chunk-39-1.png)<!-- -->
+
+``` r
 qplot(sample_data(ps)$age, geom = "histogram",binwidth=20) + xlab("age")
 ```
 
-```{r}
+    ## Warning: `qplot()` was deprecated in ggplot2 3.4.0.
+
+![](tutoDADA2_files/figure-gfm/unnamed-chunk-40-1.png)<!-- -->
+
+``` r
 qplot(log10(rowSums(otu_table(ps))),binwidth=0.2) +
   xlab("Logged counts-per-sample")
 ```
 
-```{r}
+![](tutoDADA2_files/figure-gfm/unnamed-chunk-41-1.png)<!-- -->
+
+``` r
 sample_data(ps)$age_binned <- cut(sample_data(ps)$age,
                           breaks = c(0, 100, 200, 400))
 levels(sample_data(ps)$age_binned) <- list(Young100="(0,100]", Mid100to200="(100,200]", Old200="(200,400]")
 sample_data(ps)$family_relationship=gsub(" ","",sample_data(ps)$family_relationship)
 pslog <- transform_sample_counts(ps, function(x) log(1 + x))
 out.wuf.log <- ordinate(pslog, method = "MDS", distance = "wunifrac")
+```
+
+    ## Warning in UniFrac(physeq, weighted = TRUE, ...): Randomly assigning root as --
+    ## GCAAGCGTTATCCGGATTTACTGGGTGTAAAGGGAGCGTAGACGGTGCAGCAAGTCTGATGTGAAAGGTCGGGGCCCAACCCCGGGACTGCATTGGAAACTGTTGAACTGGAGTACAGGAGAGGTAAGCGGAATTCCTAGTGTAGCGGTGAAATGCGTAGATATTAGGAGGAACACCAGTGGCGAAGGCGGCTTACTGGACTGTAACTGACGTTGAGGCTCGAAAGCGTGGGGAG
+    ## -- in the phylogenetic tree in the data you provided.
+
+``` r
 evals <- out.wuf.log$values$Eigenvalues
 plot_ordination(pslog, out.wuf.log, color = "age_binned") +
   labs(col = "Binned Age") +
   coord_fixed(sqrt(evals[2] / evals[1]))
 ```
 
-```{r}
+![](tutoDADA2_files/figure-gfm/unnamed-chunk-42-1.png)<!-- -->
+
+``` r
 rel_abund <- t(apply(otu_table(ps), 1, function(x) x / sum(x)))
 qplot(rel_abund[, 12], geom = "histogram",binwidth=0.05) +
   xlab("Relative abundance")
 ```
 
-```{r}
+![](tutoDADA2_files/figure-gfm/unnamed-chunk-43-1.png)<!-- -->
+
+``` r
 outliers <- c("F5D165", "F6D165", "M3D175", "M4D175", "M5D175", "M6D175")
 ps <- prune_samples(!(sample_names(ps) %in% outliers), ps)
 ```
 
-```{r}
+``` r
 which(!rowSums(otu_table(ps)) > 1000)
 ```
 
-```{r}
+    ## F5D145 M1D149   M1D9 M2D125  M2D19 M3D148 M3D149   M3D3   M3D5   M3D8 
+    ##     69    185    200    204    218    243    244    252    256    260
+
+``` r
 ps <- prune_samples(rowSums(otu_table(ps)) > 1000, ps)
 pslog <- transform_sample_counts(ps, function(x) log(1 + x))
 ```
 
-```{r}
+``` r
 out.pcoa.log <- ordinate(pslog,  method = "MDS", distance = "bray")
 evals <- out.pcoa.log$values[,1]
 plot_ordination(pslog, out.pcoa.log, color = "age_binned",
@@ -355,7 +554,9 @@ plot_ordination(pslog, out.pcoa.log, color = "age_binned",
   coord_fixed(sqrt(evals[2] / evals[1]))
 ```
 
-```{r}
+![](tutoDADA2_files/figure-gfm/unnamed-chunk-47-1.png)<!-- -->
+
+``` r
 out.dpcoa.log <- ordinate(pslog, method = "DPCoA")
 evals <- out.dpcoa.log$eig
 plot_ordination(pslog, out.dpcoa.log, color = "age_binned", label= "SampleID",
@@ -364,13 +565,24 @@ plot_ordination(pslog, out.dpcoa.log, color = "age_binned", label= "SampleID",
   coord_fixed(sqrt(evals[2] / evals[1]))
 ```
 
-```{r}
+![](tutoDADA2_files/figure-gfm/unnamed-chunk-48-1.png)<!-- -->
+
+``` r
 plot_ordination(pslog, out.dpcoa.log, type = "species", color = "Phylum") +
   coord_fixed(sqrt(evals[2] / evals[1]))
 ```
 
-```{r}
+![](tutoDADA2_files/figure-gfm/unnamed-chunk-49-1.png)<!-- -->
+
+``` r
 out.wuf.log <- ordinate(pslog, method = "PCoA", distance ="wunifrac")
+```
+
+    ## Warning in UniFrac(physeq, weighted = TRUE, ...): Randomly assigning root as --
+    ## GCAAGCGTTATCCGGATTTATTGGGTGTAAAGGGTGCGTAGACGGGAATTTAAGTTAGTTGTGAAATCCCTCGGCTTAACTGAGGAACTGCAACTAAAACTGAATTTCTTGAGTGCGGGAGAGGAAAGTGGAATTCCTAGTGTAGCGGTGAAATGCGTAGATATTAGGAGGAACACCAGTGGCGAAGGCGACTTTCTGGACCGTAACTGACGTTGAGGCACGAAAGTGTGGGGAG
+    ## -- in the phylogenetic tree in the data you provided.
+
+``` r
 evals <- out.wuf.log$values$Eigenvalues
 plot_ordination(pslog, out.wuf.log, color = "age_binned",
                   shape = "family_relationship") +
@@ -378,25 +590,37 @@ plot_ordination(pslog, out.wuf.log, color = "age_binned",
   labs(col = "Binned Age", shape = "Litter")
 ```
 
-```{r}
+![](tutoDADA2_files/figure-gfm/unnamed-chunk-50-1.png)<!-- -->
+
+``` r
 abund <- otu_table(pslog)
 abund_ranks <- t(apply(abund, 1, rank))
 ```
 
-```{r}
+``` r
 abund_ranks <- abund_ranks - 329
 abund_ranks[abund_ranks < 1] <- 1
 ```
 
-```{r}
+``` r
 library(dplyr)
 library(reshape2)
 abund_df <- melt(abund, value.name = "abund") %>%
   left_join(melt(abund_ranks, value.name = "rank"))
+```
+
+    ## Joining, by = c("Var1", "Var2")
+
+``` r
 colnames(abund_df) <- c("sample", "seq", "abund", "rank")
 
 abund_df <- melt(abund, value.name = "abund") %>%
   left_join(melt(abund_ranks, value.name = "rank"))
+```
+
+    ## Joining, by = c("Var1", "Var2")
+
+``` r
 colnames(abund_df) <- c("sample", "seq", "abund", "rank")
 
 sample_ix <- sample(1:nrow(abund_df), 8)
@@ -408,7 +632,9 @@ ggplot(abund_df %>%
   scale_color_brewer(palette = "Set2")
 ```
 
-```{r}
+![](tutoDADA2_files/figure-gfm/unnamed-chunk-53-1.png)<!-- -->
+
+``` r
 library(ade4)
 ranks_pca <- dudi.pca(abund_ranks, scannf = F, nf = 3)
 row_scores <- data.frame(li = ranks_pca$li,
@@ -425,11 +651,18 @@ tax$Order <- factor(tax$Order, levels = c(main_orders, "Other"))
 tax$otu_id <- seq_len(ncol(otu_table(ps)))
 row_scores <- row_scores %>%
   left_join(sample_data(pslog))
+```
+
+    ## Joining, by = "SampleID"
+
+``` r
 col_scores <- col_scores %>%
   left_join(tax)
 ```
 
-```{r}
+    ## Joining, by = "seq"
+
+``` r
 evals_prop <- 100 * (ranks_pca$eig / sum(ranks_pca$eig))
 ggplot() +
   geom_point(data = row_scores, aes(x = li.Axis1, y = li.Axis2), shape = 2) +
@@ -444,22 +677,33 @@ ggplot() +
   theme(panel.border = element_rect(color = "#787878", fill = alpha("white", 0)))
 ```
 
-```{r}
+![](tutoDADA2_files/figure-gfm/unnamed-chunk-55-1.png)<!-- -->
+
+``` r
 ps_ccpna <- ordinate(pslog, "CCA", formula = pslog ~ age_binned + family_relationship)
 ```
 
-```{r}
+``` r
 library(ggrepel)
 ps_scores <- vegan::scores(ps_ccpna)
 sites <- data.frame(ps_scores$sites)
 sites$SampleID <- rownames(sites)
 sites <- sites %>%
   left_join(sample_data(ps))
+```
 
+    ## Joining, by = "SampleID"
+
+``` r
 species <- data.frame(ps_scores$species)
 species$otu_id <- seq_along(colnames(otu_table(ps)))
 species <- species %>%
   left_join(tax)
+```
+
+    ## Joining, by = "otu_id"
+
+``` r
 evals_prop <- 100 * ps_ccpna$CCA$eig[1:2] / sum(ps_ccpna$CA$eig)
 ggplot() +
   geom_point(data = sites, aes(x = CCA1, y = CCA2), shape = 2, alpha = 0.5) +
@@ -476,3 +720,7 @@ ggplot() +
   theme(panel.border = element_rect(color = "#787878", fill = alpha("white", 0)))
 ```
 
+    ## Warning: ggrepel: 9 unlabeled data points (too many overlaps). Consider increasing max.overlaps
+    ## ggrepel: 9 unlabeled data points (too many overlaps). Consider increasing max.overlaps
+
+![](tutoDADA2_files/figure-gfm/unnamed-chunk-57-1.png)<!-- -->
