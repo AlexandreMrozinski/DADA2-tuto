@@ -34,7 +34,7 @@ library(phyloseqGraphTest)
 ```
 
 
-# Site du tuto: https://bioconductor.org/help/course-materials/2017/BioC2017/Day1/Workshops/Microbiome/MicrobiomeWorkflowII.html
+### Site du tuto: https://bioconductor.org/help/course-materials/2017/BioC2017/Day1/Workshops/Microbiome/MicrobiomeWorkflowII.html
 ```{r}
 miseq_path <- "MiSeq_SOP"
 list.files(miseq_path)
