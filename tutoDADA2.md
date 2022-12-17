@@ -2,8 +2,7 @@ tuto DADA2
 ================
 Mrozinski Alexandre
 
-\#site du tuto
-<https://bioconductor.org/help/course-materials/2017/BioC2017/Day1/Workshops/Microbiome/MicrobiomeWorkflowII.html>
+### Site du tuto: <https://bioconductor.org/help/course-materials/2017/BioC2017/Day1/Workshops/Microbiome/MicrobiomeWorkflowII.html>
 
 ``` r
 miseq_path <- "MiSeq_SOP"
@@ -223,6 +222,7 @@ seqtabNoC <- removeBimeraDenovo(seqtabAll)
 ```
 
 ``` r
+# base de données
 fastaRef <- "rdp_train_set_18.fa.gz?download=1"
 taxTab <- assignTaxonomy(seqtabNoC, refFasta = fastaRef, multithread=TRUE)
 unname(head(taxTab))
@@ -241,7 +241,7 @@ unname(head(taxTab))
     ## [3,] "Muribaculum"
     ## [4,] "Muribaculum"
     ## [5,] "Bacteroides"
-    ## [6,] "Muribaculum"
+    ## [6,] NA
 
 ``` r
 seqs <- getSequences(seqtabNoC)
@@ -261,6 +261,7 @@ detach("package:phangorn", unload=TRUE)
 ```
 
 ``` r
+# met sous forme de tableau, a partir d'un tableau déjà crée mais vide (inverse du CC2 ou on le creer)
 samdf <- read.csv("https://raw.githubusercontent.com/spholmes/F1000_workflow/master/data/MIMARKS_Data_combined.csv",header=TRUE)
 samdf$SampleID <- paste0(gsub("00", "", samdf$host_subject_id), "D", samdf$age-21)
 samdf <- samdf[!duplicated(samdf$SampleID),] # Remove dupicate entries for reverse reads
@@ -508,7 +509,7 @@ out.wuf.log <- ordinate(pslog, method = "MDS", distance = "wunifrac")
 ```
 
     ## Warning in UniFrac(physeq, weighted = TRUE, ...): Randomly assigning root as --
-    ## GCAAGCGTTATCCGGATTTACTGGGTGTAAAGGGAGCGTAGACGGTGCAGCAAGTCTGATGTGAAAGGTCGGGGCCCAACCCCGGGACTGCATTGGAAACTGTTGAACTGGAGTACAGGAGAGGTAAGCGGAATTCCTAGTGTAGCGGTGAAATGCGTAGATATTAGGAGGAACACCAGTGGCGAAGGCGGCTTACTGGACTGTAACTGACGTTGAGGCTCGAAAGCGTGGGGAG
+    ## GCGAGCGTTATCCGGATTTATTGGGCGTAAAGCGTGCGCAGGCGGTTTGTTAAGTCTAAAATCAAAGCCCGAAGCTTAACTTCGGTTCGTTTTAGAAACTGGCAGGCTTGAGTATGGTAGAGGCAAACGGAATTTCTAGTGTAGCGGTAAAATGCGTAGATATTAGAAGGAACACCAGTGGCGAAGGCGGTTTGCTGGGCCATTACTGACGCTCATGCACGAAAGCGTGGGGAGC
     ## -- in the phylogenetic tree in the data you provided.
 
 ``` r
@@ -579,7 +580,7 @@ out.wuf.log <- ordinate(pslog, method = "PCoA", distance ="wunifrac")
 ```
 
     ## Warning in UniFrac(physeq, weighted = TRUE, ...): Randomly assigning root as --
-    ## GCAAGCGTTATCCGGATTTATTGGGTGTAAAGGGTGCGTAGACGGGAATTTAAGTTAGTTGTGAAATCCCTCGGCTTAACTGAGGAACTGCAACTAAAACTGAATTTCTTGAGTGCGGGAGAGGAAAGTGGAATTCCTAGTGTAGCGGTGAAATGCGTAGATATTAGGAGGAACACCAGTGGCGAAGGCGACTTTCTGGACCGTAACTGACGTTGAGGCACGAAAGTGTGGGGAG
+    ## GCAAGCGTTATCCGGATTTACTGGGTGTAAAGGGAGCGCAGACGGCAGTGCAAGTCTGGAGTGAAAGCCCGGGGCCCAACCCCGGAACTGCTCTGGAAACTGTGCGGCTAGAGTACTGGAGGGGCAGGCGGAATTCCTAGTGTAGCGGTGAAATGCGTAGATATTAGGAGGAACACCAGTGGCGAAGGCGGCCTGCTGGACAGTAACTGACGTTGAGGCTCGAAAGCGTGGGGAG
     ## -- in the phylogenetic tree in the data you provided.
 
 ``` r

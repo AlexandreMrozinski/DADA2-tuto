@@ -3,7 +3,6 @@ title: "tuto DADA2"
 output: github_document
 author: Mrozinski Alexandre
 ---
-
 ```{r, include=FALSE}
 library(phyloseq)
 library(dada2)
@@ -33,7 +32,9 @@ library(genefilter)
 library(impute)
 library(phyloseqGraphTest)
 ```
-#site du tuto https://bioconductor.org/help/course-materials/2017/BioC2017/Day1/Workshops/Microbiome/MicrobiomeWorkflowII.html
+
+
+# Site du tuto: https://bioconductor.org/help/course-materials/2017/BioC2017/Day1/Workshops/Microbiome/MicrobiomeWorkflowII.html
 ```{r}
 miseq_path <- "MiSeq_SOP"
 list.files(miseq_path)
@@ -126,6 +127,7 @@ seqtabNoC <- removeBimeraDenovo(seqtabAll)
 ```
 
 ```{r}
+# base de données
 fastaRef <- "rdp_train_set_18.fa.gz?download=1"
 taxTab <- assignTaxonomy(seqtabNoC, refFasta = fastaRef, multithread=TRUE)
 unname(head(taxTab))
@@ -149,6 +151,7 @@ detach("package:phangorn", unload=TRUE)
 ```
 
 ```{r}
+# met sous forme de tableau, a partir d'un tableau déjà crée mais vide (inverse du CC2 ou on le creer)
 samdf <- read.csv("https://raw.githubusercontent.com/spholmes/F1000_workflow/master/data/MIMARKS_Data_combined.csv",header=TRUE)
 samdf$SampleID <- paste0(gsub("00", "", samdf$host_subject_id), "D", samdf$age-21)
 samdf <- samdf[!duplicated(samdf$SampleID),] # Remove dupicate entries for reverse reads
