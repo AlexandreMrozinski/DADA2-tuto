@@ -44,7 +44,42 @@ if (any(!.inst)){
   devtools::install_github(.github_packages[!.inst])
 }
 ```
-
+```{r library, include=FALSE}
+library(DECIPHER)
+library(rmarkdown)
+library(knitr)
+library(phyloseq)
+library(dada2)
+library(DECIPHER)
+library(phangorn)
+library(ggplot2)
+library(gridExtra)
+library(shiny)
+library(miniUI)
+library(caret)
+library(pls)
+library(e1071)
+library(ggplot2)
+library(randomForest)
+library(dplyr)
+library(ggrepel)
+#library(nlme)
+library(devtools)
+library(reshape2)
+library(PMA)
+#library(structSSI)
+library(ade4)
+library(ggnetwork)
+library(intergraph)
+library(scales)
+library(genefilter)
+library(impute)
+library(phyloseqGraphTest)
+library(Biostrings)
+library(RSQLite)
+library(parallel)
+library(ape)
+```
 
 
 
